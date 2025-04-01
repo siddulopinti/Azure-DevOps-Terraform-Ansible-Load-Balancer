@@ -1,0 +1,28 @@
+
+
+- name: Configure Web Servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Allow HTTP traffic through UFW
+      ufw:
+        rule: allow
+        port: "80"
+        proto: tcp
+
+    - name: Check if the web server is up and running
+      uri:
+        url: "http://{{ ansible_host }}"
+        status_code: 200
